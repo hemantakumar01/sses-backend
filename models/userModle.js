@@ -28,6 +28,10 @@ const userSchema = new mongoose.Schema({
     required: true,
     default: "user",
   },
+  gender: {
+    type: String,
+    require: true,
+  },
 });
 
 const Users = mongoose.model("user", userSchema);

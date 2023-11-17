@@ -1,3 +1,5 @@
+const nodemailer = require("nodemailer");
+
 exports.sendMessage = (options) => {
   const {
     res,
@@ -12,4 +14,41 @@ exports.sendMessage = (options) => {
     message,
     data,
   });
+};
+
+exports.sendMail = async ({ subject, text, email }) => {
+  try {
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        // TODO: replace `user` and `pass` values from <https://forwardemail.net>
+        user: process.env.EMAIL,
+        pass: process.env.PASSWORD,
+      },
+    });
+
+    const mailOptions = {
+      from: "officialhemantpaswan1@gmail.com",
+      to: email || "hemantakumarpaswan@gmail.com",
+      subject: subject || "Test Email",
+      text: text || "Hello, this is a test email!",
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        return console.log(error);
+      }
+      console.log("Email sent: " + info.response);
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.localVariable = (req, res, next) => {
+  req.app.local = {
+    OTP: "0000",
+    resetSession: false,
+  };
+  next();
 };
