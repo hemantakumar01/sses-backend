@@ -6,7 +6,6 @@ const Users = require("../models/userModle.js");
 exports.authUser = async (req, res, next) => {
   try {
     const authorization = req.headers.authorization;
-
     if (!authorization || authorization === "Bearer null")
       return res.status(400).send({
         success: false,
@@ -22,7 +21,6 @@ exports.authUser = async (req, res, next) => {
     const { id } = jwt.verify(token, process.env.JWT_TOKEN);
 
     const user = await Users.findOne({ _id: id });
-    console.log(user);
     req.user = user;
     next();
   } catch (error) {
@@ -71,15 +69,16 @@ exports.isStudent = async (req, res, next) => {
   }
 };
 
-exports.isStudent = async (req, res, next) => {
+exports.isAdmin = async (req, res, next) => {
   try {
-    if (req.user.type === "user" || "student" || "teacher") {
+    if (req.user.type === "admin") {
+      next();
+    } else {
       return res.status(500).send({
         success: false,
         message: "Invalid User",
       });
     }
-    next();
   } catch (error) {
     return res.status(500).send({
       success: false,

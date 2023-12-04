@@ -6,15 +6,20 @@ const colors = require("colors");
 const mongoose = require("mongoose");
 const router = require("./routes/userRoutes.js");
 const cookieParser = require("cookie-parser");
+const Admission = require("./models/admissionModle.js");
+const upload = require("./helper/multer.js");
+
 port = 8080;
 
 const app = express();
 app.use(cookieParser());
 // middleware
 app.use(express.json());
-app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
+app.use(cors({ credentials: true, origin: process.env.CORS_URL }));
+app.use(express.static("uploads"));
 app.use(express.static(path.join(__dirname, "./client/build")));
 app.use("/api", router);
+app.use("/api", require("./routes/addmisionRoutes.js"));
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
@@ -27,6 +32,10 @@ app.get("*", (req, res) => {
     console.log(error);
   }
 });
+
+// Express middleware for serving static files
+app.use(express.static("uploads"));
+
 app.listen(port, () => {
   console.log(`Server is working in port `);
 });

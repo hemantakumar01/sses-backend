@@ -32,6 +32,53 @@ const userSchema = new mongoose.Schema({
     type: String,
     require: true,
   },
+  dateOfBirth: {
+    type: Date,
+    default: "",
+  },
+  class: {
+    type: String,
+
+    default: "",
+  },
+  notification: [
+    {
+      subject: String,
+      message: String,
+      footer: {
+        type: String,
+        default: "Your Regardes",
+      },
+      read: {
+        type: Boolean,
+        default: false,
+      },
+      date: {
+        type: Date,
+        default: Date.now(),
+      },
+    },
+  ],
+  classTeacher: {
+    type: String,
+  },
+  roll: { type: String, default: "" },
+  address: {
+    type: String,
+    default: "",
+  },
+  religion: {
+    type: String,
+    default: "",
+  },
+  address: {
+    type: String,
+    default: "",
+  },
+  addmissionId: {
+    type: String,
+    default: "",
+  },
 });
 
 const Users = mongoose.model("user", userSchema);

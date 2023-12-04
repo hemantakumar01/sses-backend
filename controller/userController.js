@@ -6,7 +6,7 @@ const otpGenerator = require("otp-generator");
 
 exports.createUser = async (req, res) => {
   try {
-    const { email, name, number, password, gender } = req.body;
+    const { email, name, number, password, gender, profile } = req.body;
 
     let user = await Users.findOne({ email });
     if (user)
@@ -28,7 +28,25 @@ exports.createUser = async (req, res) => {
       number,
       password: hashPassword,
       gender,
+      profile,
     });
+    user.notification.push({
+      subject:
+        " Welcome to Seven Sister's English School - Your Educational Journey Begins!",
+      message: `Dear ${user.name} n\ Welcome to the Seven Sister's
+English School family! We're thrilled to have you on board for an exciting year of learning and growth. At Seven Sisiters English School, we're dedicated to fostering a supportive environment where each student can excel academically and personally. Our committed team is here to guide you through this journey, ensuring you have a well-rounded and enriching experience. Explore our clubs, sports, and events to make the most of your time here. If you have any questions or need assistance, don't hesitate to reach out. Get ready for an amazing academic adventure at Seven Sister's
+English School!`,
+      footer: "Biswajeet Dhar",
+    });
+    sendMail({
+      subject:
+        " Welcome to Seven Sister's English School - Your Educational Journey Begins!",
+      text: `Dear ${user.name} n\ Welcome to the Seven Sister's
+English School family! We're thrilled to have you on board for an exciting year of learning and growth. At [School Name], we're dedicated to fostering a supportive environment where each student can excel academically and personally. Our committed team is here to guide you through this journey, ensuring you have a well-rounded and enriching experience. Explore our clubs, sports, and events to make the most of your time here. If you have any questions or need assistance, don't hesitate to reach out. Get ready for an amazing academic adventure at Seven Sister's
+English School!`,
+      to: user.email,
+    });
+    await user.save();
     const token = await jwt.sign({ id: user._id }, process.env.JWT_TOKEN);
     res.status(200).send({
       success: true,
@@ -43,9 +61,37 @@ exports.createUser = async (req, res) => {
 };
 exports.getSingleUser = async (req, res) => {
   try {
-    console.log(req.user);
     const data = await Users.findById({ _id: req.user._id });
     data.password = null;
+    sendMessage({ res, status: 200, data: data, success: true });
+  } catch (error) {
+    sendMessage({ res, status: 500, data: error.message });
+    console.log(error);
+  }
+};
+exports.getSingleUsers = async (req, res) => {
+  try {
+    const data = await Users.findById({ _id: req.params.id });
+    data.password = null;
+    sendMessage({ res, status: 200, data: data, success: true });
+  } catch (error) {
+    sendMessage({ res, status: 500, data: error.message });
+    console.log(error);
+  }
+};
+exports.getAllUser = async (req, res) => {
+  try {
+    const filters = {};
+    if (req.query.name) {
+      filters.name = { $regex: new RegExp(req.query.name, "i") };
+    }
+    if (req.query.roll) filters.roll = req.query.roll;
+    if (req.query.type) filters.type = req.query.type;
+    if (req.query.class) filters.class = req.query.class;
+    if (req.query.classteacher) filters.classteacher = req.query.classteacher;
+
+    const data = await Users.find(filters).select("-password");
+
     sendMessage({ res, status: 200, data: data, success: true });
   } catch (error) {
     sendMessage({ res, status: 500, data: error.message });
@@ -120,7 +166,8 @@ exports.generateOtp = async (req, res) => {
 
     res.status(200).send({
       OTP: otp,
-      Data: req.app.local.OTP,
+      success: true,
+      message: "OTP Sent",
     });
   } catch (error) {
     sendMessage({ res, message: "error", data: error.message });
@@ -130,7 +177,9 @@ exports.generateOtp = async (req, res) => {
 exports.verifyOtp = (req, res) => {
   try {
     if (req.app.local.resetSession) {
-      if (parseInt(req.app.local.OTP) === req.body.OTP) {
+      console.log("first");
+      if (parseInt(req.app.local.OTP) === parseInt(req.body.OTP)) {
+        console.log("first");
         req.app.local.resetSession = false;
         req.app.local.OTP = null;
         return sendMessage({
@@ -144,14 +193,14 @@ exports.verifyOtp = (req, res) => {
       req.app.local.OTP = null;
       return sendMessage({
         res,
-        status: 500,
+        status: 400,
         success: false,
         message: "Invalid OTP, Regenerate Again",
       });
     }
     req.app.local.resetSession = false;
     req.app.local.OTP = null;
-    res.status(500).send({
+    res.status(200).send({
       success: false,
       message: "Invalid OTP, Regenerate Again",
     });
@@ -166,5 +215,134 @@ exports.updateUser = async (req, res) => {
   } catch (error) {
     console.log(error);
     sendMessage({ res, message: "error", data: error.message });
+  }
+};
+
+exports.updateUser = async (req, res) => {
+  try {
+    res.status(200).send({
+      success: true,
+      message: req.user,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.markAsRead = async (req, res) => {
+  try {
+    req.user.notification.map((item) => {
+      if (item._id == req.body.id) {
+        item.read = true;
+      }
+    });
+    await req.user.save();
+    console.log(req.body.id);
+    res.status(200).send({
+      success: true,
+      message: "success",
+      data: req.user,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.asignStudent = async (req, res) => {
+  try {
+    const { roll, type } = req.body;
+    const user = await Users.findOne({ _id: req.body.id });
+
+    if (!user)
+      return res.status(400).send({
+        success: false,
+        message: "User Not Found2",
+      });
+    const assignedUser = await Users.findOne({
+      roll,
+      type,
+      class: req.body.class,
+    });
+    if (assignedUser) {
+      return res.status(200).send({
+        success: false,
+        message: "Try different Roll number",
+        roll,
+        data: assignedUser,
+      });
+    }
+
+    user.class = req.body.class;
+    user.type = req.body.type;
+    user.roll = req.body.roll;
+    user.notification.push({
+      subject: "Class Assigned ...",
+      message: `Hey ${user.name} you  are  Assigned to class ${user.class}`,
+    });
+    await user.save();
+    res.status(200).send({
+      message: "Class Updated",
+      success: true,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      message: error.message,
+      success: false,
+    });
+  }
+};
+
+exports.asignTeacher = async (req, res) => {
+  try {
+    const { roll, type } = req.body;
+    const user = await Users.findOne({ _id: req.body.id });
+
+    if (!user)
+      return res.status(400).send({
+        success: false,
+        message: "User Not Found",
+      });
+    const assignedUser = await Users.findOne({
+      roll,
+
+      classTeacher: req.body.class,
+    });
+    if (assignedUser) {
+      return res.status(200).send({
+        success: false,
+        message: "Try different Roll number",
+        roll,
+        data: assignedUser,
+      });
+    }
+
+    user.classTeacher = req.body.class;
+    user.class = "";
+    user.type = req.body.type;
+    user.roll = req.body.roll;
+    user.notification.push({
+      subject: "Class Assigned ...",
+      message: `Hey ${user.name} you  are  Assigned to class ${user.class}`,
+    });
+    await user.save();
+    res.status(200).send({
+      message: "Teacher Updated",
+      success: true,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      message: error.message,
+      success: false,
+    });
   }
 };

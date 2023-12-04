@@ -6,6 +6,14 @@ const {
   generateOtp,
   verifyOtp,
   getSingleUser,
+  updateUser,
+  markAsRead,
+  asignClass,
+  asignType,
+  asignStudent,
+  asignTeacher,
+  getAllUser,
+  getSingleUsers,
 } = require("../controller/userController");
 const { authUser } = require("../helper/authUser");
 const { localVariable } = require("../helper/helper");
@@ -19,6 +27,8 @@ router.get("/user", authUser, (req, res) => {
 });
 // GET SINGLE USER
 router.get("/singleUser", authUser, getSingleUser);
+router.get("/singleUsers/:id", authUser, getSingleUsers);
+router.get("/getAllUser", authUser, getAllUser);
 // Login User
 router.post("/login", loginUser);
 // LoggOut User
@@ -28,4 +38,8 @@ router.post("/auth", authUser);
 
 router.post("/generate-otp", authUser, localVariable, generateOtp);
 router.post("/verify-otp", authUser, verifyOtp);
+router.post("/update", authUser, updateUser);
+router.post("/markAsRead", authUser, markAsRead);
+router.post("/asignStudent", authUser, asignStudent);
+router.post("/asignTeacher", authUser, asignTeacher);
 module.exports = router;
