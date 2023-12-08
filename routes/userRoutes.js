@@ -14,6 +14,9 @@ const {
   asignTeacher,
   getAllUser,
   getSingleUsers,
+  getClassStudent,
+  takeAttendence,
+  getAllTeachers,
 } = require("../controller/userController");
 const { authUser } = require("../helper/authUser");
 const { localVariable } = require("../helper/helper");
@@ -42,4 +45,10 @@ router.post("/update", authUser, updateUser);
 router.post("/markAsRead", authUser, markAsRead);
 router.post("/asignStudent", authUser, asignStudent);
 router.post("/asignTeacher", authUser, asignTeacher);
+// Get all students Basesd on Class teacher
+router.get("/getClassStudent", authUser, getClassStudent);
+// Take Attendence
+router.post("/attendence", authUser, takeAttendence);
+// Get All teachers
+router.get("/getAllTeachers", authUser, getAllTeachers);
 module.exports = router;

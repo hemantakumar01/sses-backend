@@ -8,6 +8,7 @@ const router = require("./routes/userRoutes.js");
 const cookieParser = require("cookie-parser");
 const Admission = require("./models/admissionModle.js");
 const upload = require("./helper/multer.js");
+const Users = require("./models/userModle.js");
 
 port = 8080;
 
@@ -46,8 +47,9 @@ app.listen(port, () => {
 });
 mongoose
   .connect(`${process.env.LOCALDBURL}`)
-  .then(() => {
+  .then(async () => {
     console.log("DB is Connected");
+    // await Users.updateMany({}, { $set: { attendence: [] } });
   })
   .catch((error) => {
     console.log("Error in Connecting DB");

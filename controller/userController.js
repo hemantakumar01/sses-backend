@@ -3,6 +3,7 @@ const Users = require("../models/userModle.js");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const otpGenerator = require("otp-generator");
+const moment = require("moment");
 
 exports.createUser = async (req, res) => {
   try {
@@ -340,6 +341,96 @@ exports.asignTeacher = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
+    res.status(500).send({
+      message: error.message,
+      success: false,
+    });
+  }
+};
+// To get all students basen on classs teacher
+exports.getClassStudent = async (req, res) => {
+  try {
+    const students = await Users.find({ class: req.user.classTeacher });
+    if (students.length < 0)
+      return res.status(200).send({
+        message: "user not found",
+        success: false,
+      });
+    res.status(200).send({
+      message: "",
+      success: true,
+      data: students,
+    });
+  } catch (error) {
+    res.status(500).send({
+      message: error.message,
+      success: false,
+    });
+  }
+};
+
+exports.takeAttendence = async (req, res) => {
+  try {
+    const { id, attendence } = req.body;
+
+    const user = await Users.findById({ _id: id });
+
+    if (!user) {
+      return res.status(200).send({
+        message: "user not found",
+        success: false,
+      });
+    }
+
+    const date = Date.now();
+    let item = user.attendence.map((item) => {
+      if (
+        moment(item?.date).format("DD-MM-YYYY") ===
+        moment(date).format("DD-MM-YYYY")
+      ) {
+        item = item;
+      }
+    });
+
+    if (item.length > 0) {
+      return res.status(200).send({
+        message: "Attendence Taken",
+        success: false,
+      });
+    }
+    user.attendence.push({
+      date,
+      attendence,
+    });
+    await user.save();
+    res.status(200).send({
+      message: "user not found",
+      success: true,
+      data: { user, attendence, date },
+    });
+  } catch (error) {
+    res.status(500).send({
+      message: error.message,
+      success: false,
+    });
+  }
+};
+
+// GEt all teachers
+exports.getAllTeachers = async (req, res) => {
+  try {
+    const students = await Users.find({ type: "teacher" });
+    if (students.length < 0)
+      return res.status(200).send({
+        message: "user not found",
+        success: false,
+      });
+    res.status(200).send({
+      message: "",
+      success: true,
+      data: students,
+    });
+  } catch (error) {
     res.status(500).send({
       message: error.message,
       success: false,

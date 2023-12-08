@@ -79,6 +79,12 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: "",
   },
+  attendence: [
+    {
+      date: Date,
+      attendence: Boolean,
+    },
+  ],
 });
 
 const Users = mongoose.model("user", userSchema);
