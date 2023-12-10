@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const otpGenerator = require("otp-generator");
 const moment = require("moment");
+const Notice = require("../models/NoticeModle.js");
 
 exports.createUser = async (req, res) => {
   try {
@@ -242,11 +243,37 @@ exports.markAsRead = async (req, res) => {
       }
     });
     await req.user.save();
-    console.log(req.body.id);
+
     res.status(200).send({
       success: true,
       message: "success",
       data: req.user,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+exports.deleteItem = async (req, res) => {
+  try {
+    // Assuming req.body.id is the _id of the item you want to remove
+    const idToRemove = req.body.id;
+    const result = await Users.updateOne(
+      { _id: req.user._id }, // Assuming req.user._id is the user's _id
+      { $pull: { notification: { _id: idToRemove } } }
+    );
+
+    // result contains information about the update operation
+
+    // If you need to access the modified document after the update, you can use findOne
+    const updatedUser = await Users.findOne({ _id: req.user._id });
+    res.status(200).send({
+      success: true,
+      message: "success",
+      data: updatedUser,
     });
   } catch (error) {
     console.log(error);
@@ -435,5 +462,60 @@ exports.getAllTeachers = async (req, res) => {
       message: error.message,
       success: false,
     });
+  }
+};
+
+exports.sendNotice = async (req, res) => {
+  try {
+    const { subject, message } = req.body;
+
+    const filters = {};
+    if (req.query.name) {
+      filters.name = { $regex: new RegExp(req.query.name, "i") };
+    }
+    if (req.query.roll) filters.roll = req.query.roll;
+    if (req.query.type) filters.type = req.query.type;
+    if (req.query.class) filters.class = req.query.class;
+    if (req.query.classteacher) filters.classteacher = req.query.classteacher;
+
+    const data = await Users.find(filters).select("-password");
+    if (req.body.subject) {
+      if (data.length > 0) {
+        await Notice.create({ subject, message, filePath: req.file?.path });
+
+        data.map((item) => {
+          item.notification.push({
+            subject: req.body?.subject,
+            message: req.body?.message,
+          });
+          item.save();
+          sendMail({
+            email: item.email,
+            subject: req.body.subject,
+            text: req.body.message,
+            attachments: req.file
+              ? {
+                  filename: req.file.filename,
+                  path: req.file.path,
+                }
+              : {
+                  filename: "",
+                  path: "",
+                },
+          });
+        });
+      }
+    }
+
+    sendMessage({
+      res,
+      status: 200,
+      data: data,
+      success: true,
+      message: `Email send to ${data.length} Users`,
+    });
+  } catch (error) {
+    sendMessage({ res, status: 500, data: error.message });
+    console.log(error);
   }
 };

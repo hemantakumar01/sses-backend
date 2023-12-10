@@ -16,7 +16,13 @@ exports.sendMessage = (options) => {
   });
 };
 
-exports.sendMail = async ({ subject, text, email }) => {
+exports.sendMail = async ({
+  subject,
+  text,
+  email,
+
+  attachments: { filename, path },
+}) => {
   try {
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -32,6 +38,14 @@ exports.sendMail = async ({ subject, text, email }) => {
       to: email || "hemantakumarpaswan@gmail.com",
       subject: subject || "Test Email",
       text: text || "Hello, this is a test email!",
+      attachments: path
+        ? [
+            {
+              filename: filename,
+              path: path,
+            },
+          ]
+        : undefined,
     };
 
     transporter.sendMail(mailOptions, (error, info) => {

@@ -17,9 +17,12 @@ const {
   getClassStudent,
   takeAttendence,
   getAllTeachers,
+  sendNotice,
+  deleteItem,
 } = require("../controller/userController");
 const { authUser } = require("../helper/authUser");
 const { localVariable } = require("../helper/helper");
+const upload = require("../helper/multer");
 
 const router = express.Router();
 // Create New User
@@ -43,6 +46,7 @@ router.post("/generate-otp", authUser, localVariable, generateOtp);
 router.post("/verify-otp", authUser, verifyOtp);
 router.post("/update", authUser, updateUser);
 router.post("/markAsRead", authUser, markAsRead);
+router.put("/deleteItem", authUser, deleteItem);
 router.post("/asignStudent", authUser, asignStudent);
 router.post("/asignTeacher", authUser, asignTeacher);
 // Get all students Basesd on Class teacher
@@ -51,4 +55,5 @@ router.get("/getClassStudent", authUser, getClassStudent);
 router.post("/attendence", authUser, takeAttendence);
 // Get All teachers
 router.get("/getAllTeachers", authUser, getAllTeachers);
+router.post("/sendNotice", authUser, upload.single("file"), sendNotice);
 module.exports = router;
