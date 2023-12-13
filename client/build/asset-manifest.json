@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.a1a0f5a2.css",
-    "main.js": "/static/js/main.474b2b09.js",
+    "main.css": "/static/css/main.be5596d6.css",
+    "main.js": "/static/js/main.59b09640.js",
     "static/media/page-not-found.jpg": "/static/media/page-not-found.bbdb51a7b59871804c14.jpg",
     "static/media/05.jpg": "/static/media/05.3265ef5ddf4b9859ca78.jpg",
     "static/media/01.jpg": "/static/media/01.41b61c4d3ba3673baa34.jpg",
@@ -10,6 +10,7 @@
     "static/media/ilustration.png": "/static/media/ilustration.f1b3c79b03a283962435.png",
     "static/media/02.jpg": "/static/media/02.5b3d27fc3c4e85d8f731.jpg",
     "static/media/loading.gif": "/static/media/loading.90672f1deffccbcdf4f1.gif",
+    "static/media/contact-us-3483601-2912018.webp": "/static/media/contact-us-3483601-2912018.90406d3ee1434f69b7e1.webp",
     "static/media/logo.png": "/static/media/logo.fa5b72a71ae6a14e83eb.png",
     "static/media/teacher-1.jpeg": "/static/media/teacher-1.3625dfc646b08a5246f7.jpeg",
     "static/media/profile.png": "/static/media/profile.5faf09a7795d28bf5a2b.png",
@@ -17,11 +18,11 @@
     "static/media/sita.jpg": "/static/media/sita.3df6ecaf13d1a15fe165.jpg",
     "static/media/pran.jpg": "/static/media/pran.14e2fc934b3e1470c12e.jpg",
     "index.html": "/index.html",
-    "main.a1a0f5a2.css.map": "/static/css/main.a1a0f5a2.css.map",
-    "main.474b2b09.js.map": "/static/js/main.474b2b09.js.map"
+    "main.be5596d6.css.map": "/static/css/main.be5596d6.css.map",
+    "main.59b09640.js.map": "/static/js/main.59b09640.js.map"
   },
   "entrypoints": [
-    "static/css/main.a1a0f5a2.css",
-    "static/js/main.474b2b09.js"
+    "static/css/main.be5596d6.css",
+    "static/js/main.59b09640.js"
   ]
 }

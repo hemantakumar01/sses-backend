@@ -21,7 +21,7 @@ exports.sendMail = async ({
   text,
   email,
 
-  attachments: { filename, path },
+  attachments: { filename, path } = {},
 }) => {
   try {
     const transporter = nodemailer.createTransport({
@@ -32,20 +32,20 @@ exports.sendMail = async ({
         pass: process.env.PASSWORD,
       },
     });
-
     const mailOptions = {
-      from: "officialhemantpaswan1@gmail.com",
+      from: "Senev Sister's English School <officialhemantpaswan1@gmail.com>",
       to: email || "hemantakumarpaswan@gmail.com",
       subject: subject || "Test Email",
       text: text || "Hello, this is a test email!",
-      attachments: path
-        ? [
-            {
-              filename: filename,
-              path: path,
-            },
-          ]
-        : undefined,
+      attachments:
+        path && filename
+          ? [
+              {
+                filename: filename,
+                path: path,
+              },
+            ]
+          : undefined,
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
