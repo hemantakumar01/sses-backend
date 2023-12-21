@@ -60,7 +60,6 @@ const admissionSchema = new mongoose.Schema(
     }, // Assuming you save the file path or URL
     profile: {
       type: String,
-      required: true,
     }, // Assuming you save the file path or URL
     status: {
       type: String,
