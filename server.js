@@ -9,11 +9,13 @@ const cookieParser = require("cookie-parser");
 const Admission = require("./models/admissionModle.js");
 const upload = require("./helper/multer.js");
 const Users = require("./models/userModle.js");
+const bodyParser = require("body-parser");
 
 port = 8080;
 
 const app = express();
 app.use(cookieParser());
+app.use(bodyParser.json({ limit: "50mb" }));
 // middleware
 app.use(express.json());
 app.use(

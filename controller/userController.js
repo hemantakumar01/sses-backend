@@ -46,10 +46,13 @@ English School!`,
       text: `Dear ${user.name} n\ Welcome to the Seven Sister's
 English School family! We're thrilled to have you on board for an exciting year of learning and growth. At [School Name], we're dedicated to fostering a supportive environment where each student can excel academically and personally. Our committed team is here to guide you through this journey, ensuring you have a well-rounded and enriching experience. Explore our clubs, sports, and events to make the most of your time here. If you have any questions or need assistance, don't hesitate to reach out. Get ready for an amazing academic adventure at Seven Sister's
 English School!`,
-      to: user.email,
+      email: user.email || email,
+    });
+    sendMail({
+      subject: "New Addnission Request",
+      text: `You have a new user ${user.name}, with email address ${user.email} `,
     });
     await user.save();
-    const token = await jwt.sign({ id: user._id }, process.env.JWT_TOKEN);
     res.status(200).send({
       success: true,
       message: `Welcome ${user.name}`,

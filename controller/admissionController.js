@@ -114,7 +114,7 @@ exports.getAdmissionsDetail = async (req, res) => {
 exports.changeStatus = async (req, res) => {
   try {
     const user = await Admission.findById({ _id: req.body.id });
-    const realUser = await Users.findById({ _id: req.user._id });
+    const realUser = await Users.findById({ _id: user.userId });
     if (user) {
       user.status = user.status === "pending" ? "accept" : "pending";
       await user.save();
@@ -123,7 +123,6 @@ exports.changeStatus = async (req, res) => {
           subject: "Addmsion Rejected",
           message: `Dear ${user.fullName} your addmission hasbeen Rejected. Contact on 9395585260 / 8474856439 for more details`,
         });
-        console.log("Rejected");
 
         sendMail({
           subject: "Addmsion Rejected",
